@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title th:text="${title} + ' - ' + ${siteName}"></title>
+    <script th:src="@{__${templateUrl}__/js/bootstrap.min.js}" type="text/javascript"></script>
+    <link th:href="@{__${templateUrl}__/css/bootstrap.min.css}" rel="stylesheet">
+    <style>
+        .btn-edit {
+            --bs-btn-color: #fff;
+            --bs-btn-bg: #0e90a9;;
+            --bs-btn-border-color: #096172;
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: #0eaac9;;
+            --bs-btn-hover-border-color: #096172;
+            --bs-btn-focus-shadow-rgb: 49,132,253;
+            --bs-btn-active-color: #fff;
+            --bs-btn-active-bg: #096172;
+            --bs-btn-active-border-color: #096172;
+            --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+            --bs-btn-disabled-color: #fff;
+            --bs-btn-disabled-bg: #096172;
+            --bs-btn-disabled-border-color: #096172;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap shadow">
+    <div class="container-fluid">
+        <div class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white fs-4"><span class="fw-semibold" th:text="${user.email}"></span> with roles: <span th:text="${user.getRolesStr()}"></span></div>
+        <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
+        <div class="px-md-4 text-end">
+            <div class="navbar-nav">
+                <div class="nav-item text-nowrap"> <a class="nav-link px-3" th:href="@{__${siteUrl}__/logout}">Logout</a> </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container-fluid bg-light">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-body sidebar collapse position-fixed h-100">
+            <div class="position-sticky pt-3">
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{__${siteUrl}__/admin}">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{__${siteUrl}__/user}">User</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 justify-content-center">
+            <h1 class="p-3">User information page</h1>
+            <div class="justify-content-center flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <div class="row me-3 ms-3">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#all-users-tab" type="button" role="tab" aria-controls="all-users-tab" aria-selected="true">Users table</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content bg-body border border-top-0 rounded-bottom" id="myTabContent">
+                        <div class="tab-pane fade show active" id="all-users-tab" role="tabpanel" aria-labelledby="users-tab" tabindex="0">
+                            <div class="container-fluid mt-3 mb-3 text-center">
+                                <h4>About user</h4>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">First Name</th>
+                                        <th scope="col">Last Name</th>
+                                        <th scope="col">Age</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Role</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td th:text="${user.id}"></td>
+                                            <td th:text="${user.name}"></td>
+                                            <td th:text="${user.lastName}"></td>
+                                            <td th:text="${user.age}"></td>
+                                            <td th:text="${user.email}"></td>
+                                            <td th:text="${user.getRolesStr()}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
