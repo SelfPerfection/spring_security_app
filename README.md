@@ -6,6 +6,6 @@
 	<li>Thymeleaf template engine</li>
 	<li>Bootstrap 5 html5 template</li>
 </ul>
-<p>First Install - Load demo data to DB -> go to http://localhost:8080/create_users -> Success</p>
+<p>First Install? Loading demo data to DB will be automatically. After installation, please delete/comment src util/DemoDataService.java</p>
 <p>Login page -> http://localhost:8080/login</p>
 <p>Access data -> check the MainController.java</p>
