@@ -7,16 +7,18 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Roles")
+@Table(name = "roles")
 public class Role implements GrantedAuthority {
 
     @Id
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name="name")
     private String name;
 
-    @Transient
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles", cascade = CascadeType.MERGE)
     private List<User> users;
 
     public Role() {

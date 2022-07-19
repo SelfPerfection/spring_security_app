@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.kata.spring.boot_security.demo.dao.RoleDAO;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -16,72 +17,49 @@ import java.util.List;
 @Service
 public class UserServiceImp implements UserService {
 
-    private final UserDAO userDao;
+    private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
-    private final RoleService roleService;
+    private final RoleDAO roleDAO;
 
     @Autowired
-    public UserServiceImp(UserDAO userDao, PasswordEncoder passwordEncoder, RoleService roleService) {
-        this.userDao = userDao;
+    public UserServiceImp(UserDAO userDAO, PasswordEncoder passwordEncoder, RoleDAO roleDAO) {
+        this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
-        this.roleService = roleService;
+        this.roleDAO = roleDAO;
     }
 
     @Override
     public User getUserById(Long id) {
-        return userDao.getUserById(id);
+        return userDAO.getUserById(id);
     }
 
     @Override
     @Transactional
     public void createUser(User user) {
-        List<Role> roles = new ArrayList<>();
-        List<Role> rolesForm = user.getRoles();
-
-        // Check roles, if roles are empty - set default ROLE_USER
-        if (!rolesForm.isEmpty()) {
-            for (Role role : rolesForm) {
-                roles.add(roleService.getRoleByRoleName(role.getRoleName()));
-            }
-        } else {
-            roles.add(roleService.getRoleByRoleName("ROLE_USER"));
-        }
-
-        user.setRoles(roles);
+        user.setRoles(checkRoles(user.getRoles()));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.createUser(user);
+        userDAO.createUser(user);
     }
 
     @Override
     @Transactional
     public void deleteUser(Long id) {
-        userDao.deleteUser(id);
+        userDAO.deleteUser(id);
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        return userDAO.getAllUsers();
     }
 
     @Override
     public User findUserByEmail(String email) {
-        return userDao.findUserByEmail(email);
+        return userDAO.findUserByEmail(email);
     }
 
     @Override
     @Transactional
     public void editUser(User user, Long id) {
-        List<Role> roles = new ArrayList<>();
-        List<Role> rolesForm = user.getRoles();
-
-        // Check roles, if roles are empty - set default ROLE_USER
-        if (!rolesForm.isEmpty()) {
-            for (Role role : rolesForm) {
-                roles.add(roleService.getRoleByRoleName(role.getRoleName()));
-            }
-        } else {
-            roles.add(roleService.getRoleByRoleName("ROLE_USER"));
-        }
 
         // Check password, if password is empty or null - get password from db by user id, else set password from form
         if (user.getPassword().equals("") || user.getPassword() == null) {
@@ -90,7 +68,26 @@ public class UserServiceImp implements UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
 
-        user.setRoles(roles);
-        userDao.editUser(user);
+        user.setRoles(checkRoles(user.getRoles()));
+        userDAO.editUser(user);
+    }
+
+    /*
+     * Method check roles, if roles are empty - set default ROLE_USER
+     * Return List<Role>
+     * @param List<Role> rolesForm
+     * @return List<Role>
+     */
+    private List<Role> checkRoles(List<Role> rolesForm) {
+        List<Role> roles = new ArrayList<>();
+
+        if (!rolesForm.isEmpty()) {
+            for (Role role : rolesForm) {
+                roles.add(roleDAO.getRoleByRoleName(role.getRoleName()));
+            }
+        } else {
+            roles.add(roleDAO.getRoleByRoleName("ROLE_USER"));
+        }
+        return roles;
     }
 }

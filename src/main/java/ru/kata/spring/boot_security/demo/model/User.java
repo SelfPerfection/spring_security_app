@@ -1,7 +1,5 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import org.hibernate.annotations.SelectBeforeUpdate;
-
 import javax.persistence.*;
 
 import javax.validation.constraints.Email;
@@ -12,11 +10,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
-@SelectBeforeUpdate
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
     @Id
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -40,7 +38,10 @@ public class User {
     @Transient
     private String passwordConfirm;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
     public User() {

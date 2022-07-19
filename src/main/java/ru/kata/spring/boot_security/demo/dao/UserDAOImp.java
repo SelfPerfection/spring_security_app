@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.dao;
 
+import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.model.User;
 
@@ -48,25 +49,27 @@ public class UserDAOImp implements UserDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<User> getAllUsers() {
-        String jpql = "SELECT u FROM User u";
-        TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+        String jpql = "SELECT DISTINCT u FROM User u JOIN FETCH u.roles ORDER BY u.id";
+
+        TypedQuery<User> query = entityManager.createQuery(jpql, User.class)
+                .setHint( QueryHints.HINT_PASS_DISTINCT_THROUGH, false );
         return query.getResultList();
     }
 
     @Override
     public User findByUsername(String username) {
+        String jpql = "SELECT u FROM User u JOIN FETCH u.roles WHERE u.name=:username";
 
-        String jpql1 = "SELECT u FROM User u WHERE u.name=:username";
-        return (User) entityManager.createQuery(jpql1)
+        return (User) entityManager.createQuery(jpql)
                 .setParameter("username", username)
                 .getSingleResult();
     }
 
     @Override
     public User findUserByEmail(String email) {
+        String jpql = "SELECT u FROM User u JOIN FETCH u.roles WHERE u.email=:email";
 
-        String jpql1 = "SELECT u FROM User u WHERE u.email=:email";
-        return (User) entityManager.createQuery(jpql1)
+        return (User) entityManager.createQuery(jpql)
                 .setParameter("email", email)
                 .getSingleResult();
     }
